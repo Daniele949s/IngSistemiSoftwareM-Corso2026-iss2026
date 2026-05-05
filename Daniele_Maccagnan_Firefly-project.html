@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js" crossorigin="anonymous"></script> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style type="text/css">
+body { margin-left: 30px; margin-right: 30px; font-size: 10pt; font-family: Tahoma; }
+P { font-family: Tahoma; }
+a, a:visited, a:active, a:link, a:hover { text-decoration: underline; color: #545454; background-color: transparent; }
+a:hover { background-color: #cccccc; }
+hr { clear: both; height: 1px; color: #242424; background-color: transparent; }
+h1, h2, h3 { color: #242424; clear: left; font: 100% Tahoma, Helvetica, Arial, sans-serif; margin-bottom: 0.5em; padding-top: 0.5em; border-radius: 10px; padding: 5px; }
+top { width: 100%; }
+#i { color: #ff1010; }
+tt { font-family: "Arial"; color: #006600; }
+em { font-family: "Arial"; font-weight: bold; border-style: solid; border-color: #abe876; color: #1632cc; }
+bc { font-family: "Arial"; font-weight: bold; color: #990000; background-color: #fcf8c7; }
+ks { font-family: "Arial"; font-weight: bold; color: #0000CD; }
+kc { font-family: "Arial"; font-weight: bold; color: #008000; }
+pre { font-family: "Consolas"; background-color: #f5f5f5; border: 1.5px solid silver; padding: 5px; }
+m { font-family: "Helvetica"; line-height: 100%; }
+div.body { font-size: 18px; }
+k { color: #990000; font-weight: bold; }
+h1 { font-size: 150%; background-color: #b2c0ff; padding: 10px; }
+h2 { background-color: #9ed8ff; font-size: 130%; }
+h3 { background-color: #e6ccff; font-size: 100%; }
+h4 { background-color: #ccffcc; font-size: 100%; width: 95%; border-radius: 5px; padding: 2px; }
+h5 { background-color: #d5ffb0; font-size: 100%; }
+div.req { background-color: #d9ffb3; font-size: 18px; width: 700px; border: 3px solid green; padding: 15px; margin: 10px; }
+div.remark { background-color: #E3F2FD; border: 1.5px solid #d5f2ed; padding: 15px; margin: 10px; border-radius: 25px; }
+table, th, td { border: 1px solid black; border-collapse: collapse; }
+ol, ul, li { margin: 0; margin-left: 10px; padding: 0; padding-bottom: 5px; }
+img { border: 1.5px solid #d5f2ed }
+div.wrapdesc { width: 90%; margin: auto; }
+div.imagedesc { width: 85%; margin: auto; }
+</style>
+    
+<title>Firefly Simulator Project</title>
+</head>
+    
+<body>
+<div id="top">
+<h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE <font size="5"></font> </h1>
+</div>  
+
+<div class="body"> 
+<h2>Introduction</h2>
+
+<h3>Consegna</h3>
+<p>
+  Costruire il simulatore di un sistema costituito da 3 lucciole. Inizialmente, le lucciole lampeggiano ciascuna con una
+  frequenza (costante) propria.
+</p>
+<ul>
+  <li><b>A)</b> Dopo 10 secondi le lucciole devono lampeggiare in modo sincronizzato.</li>
+  <li><b>B)</b> Il sistema è dotato anche di un sonar. Quando il sonar rileva un ostacolo a una distanza minore di una distanza
+  prefissata DMIN, le lucciole devono lampeggiare in modo sincronizzato. Quando la distanza dell'ostacolo
+  (ri)supera DMIN, le lucciole tornano a lampeggiare in modo random.</li>
+</ul>
+
+<h3>Abstract</h3>
+<p>
+  Il progetto consiste nel creare un simulatore software di 3 lucciole indipendenti. Inizialmente lampeggiano a frequenza
+  propria e costante, ma dopo 10 secondi devono iniziare a lampeggiare in maniera sincronizzata.
+  Al sistema andrà aggiunto un sonar in grado di rilevare ostacoli: in base alla distanza rilevata (maggiore o minore di una distanza minima), il comportamento delle lucciole dovrà variare dinamicamente tra sincronizzato e randomico.
+</p>
+
+ 
+<h2>Requirements</h2>
+
+<div class="remark">
+<h3>Analisi dei Requisiti</h3>
+<p>Elenco dei requisiti:</p>
+<ul>
+  <li><b>R1</b> Il sistema deve prevedere 3 entità Lucciola. Il loro lampeggio comporta un'alternanza di stato interno</li>
+  <li><b>R2</b> Nei primi 10 secondi di esecuzione ogni lucciola deve gestire autonomamente un proprio timer per lampeggiare con una frequenza costante</li>
+  <li><b>R3</b> Dopo 10 secondi il sistema deve far si che le lucciole lampeggino in maniera sincrona</li>
+  <li><b>R4</b> Il sistema deve integrare un sonar in grado di rilevare la distanza da un ostacolo qualsiasi  
+    <ul>
+      <li>Se la distanza rilevata è minore della distanza minima le lucciole passano allo stato di lampeggio sincronizzato</li>
+      <li>Se la distanza rilevata è maggiore della distanza minima le lucciole tornano al lampeggio asincrono</li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+ 
+
+<h2>Problem analysis</h2>
+
+<p>
+  Il problema richiede di modellare un sistema in cui componenti altamente autonomi (le lucciole) devono coordinare il proprio stato al verificarsi di certe condizioni. Adottando un paradigma ad Attori (es. QActor), è fondamentale separare le entità che detengono il flusso di controllo logico (Actors) da quelle che fungono da meri trasportatori o contenitori di dati (POJO).
+</p>
+
+<h3>1. Entità Attive (Actors)</h3>
+<ul>
+  <li><b>Lucciola</b> Entità proattiva dato che gestisce un proprio timer interno per il lampeggio indipendente. Reattiva perché deve essere in grado di ricevere comandi esterni</li>
+  <li><b>Coordinatore</b> Entità proattiva creata per risolvere il problema della sincronizzazione. Affidare la gestione della sincronizzazione ai timer delle singole lucciole aumenterebbe la possibilità di errore. Il Coordinatore dopo 10 secondi invia un segnale al quale le lucciole reagiscono per accendersi simultaneamente.</li>
+  <li><b>Sonar</b> Entità proattiva. Calcola ogni breve intervallo di tempo la distanza tra le lucciole e gli ostacoli inviando messaggi di conseguenza.</li>
+</ul>
+
+<h3>2. Griglia</h3>
+<p>
+  Sorge il problema di come rappresentare le lucciole e di come il sonar può calcolare le distanze.
+  Per risolvere questo problema, si sceglie in fase di introdurre una Griglia come ambiente per il sistema. Adottando una griglia le lucciole potranno essere facilmente rappresentate in celle e il sonar potrà calcolare facilmente le distanze. Nasce così una nuova entità:
+</p>
+<ul>
+  <li><b>Griglia (Actor):</b> Entità reattiva. Riceve messaggi dalle lucciole e dal sonar e si occupa di rappresentarli.</li>
+</ul>
+
+
+<h2>Test plans</h2> 
+
+
+<h2>Project</h2> 
+ 
+ 
+
+<h2>Testing</h2> 
+ 
+
+<h2>Deployment</h2> 
+
+ 
+<h2>Maintenance</h2> 
+  
+<br/><br/>  
+</div>  
+
+<div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+By Daniele Maccagnan email: <a href="mailto:daniele.maccagnan@studio.unibo.it" style="color:white;">daniele.maccagnan@studio.unibo.it</a>, 
+<img src="./img/emiglio.png" alt="emiglio" width="8%" height="8%">
+GIT repo: https://github.com/Daniele949s/IngSistemiSoftwareM-Corso2026-iss2026
+</div> 
+</body>
+</html>
