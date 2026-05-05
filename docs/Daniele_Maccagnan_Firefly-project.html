@@ -47,30 +47,32 @@ div.imagedesc { width: 85%; margin: auto; }
 <div class="body"> 
 <h2>Introduction</h2>
 
-<h3>Consegna</h3>
-<p>
-  Costruire il simulatore di un sistema costituito da 3 lucciole. Inizialmente, le lucciole lampeggiano ciascuna con una
-  frequenza (costante) propria.
-</p>
-<ul>
-  <li><b>A)</b> Dopo 10 secondi le lucciole devono lampeggiare in modo sincronizzato.</li>
-  <li><b>B)</b> Il sistema è dotato anche di un sonar. Quando il sonar rileva un ostacolo a una distanza minore di una distanza
-  prefissata DMIN, le lucciole devono lampeggiare in modo sincronizzato. Quando la distanza dell'ostacolo
-  (ri)supera DMIN, le lucciole tornano a lampeggiare in modo random.</li>
-</ul>
-
-<h3>Abstract</h3>
 <p>
   Il progetto consiste nel creare un simulatore software di 3 lucciole indipendenti. Inizialmente lampeggiano a frequenza
   propria e costante, ma dopo 10 secondi devono iniziare a lampeggiare in maniera sincronizzata.
   Al sistema andrà aggiunto un sonar in grado di rilevare ostacoli: in base alla distanza rilevata (maggiore o minore di una distanza minima), il comportamento delle lucciole dovrà variare dinamicamente tra sincronizzato e randomico.
 </p>
 
- 
 <h2>Requirements</h2>
 
+ 
 <div class="remark">
-<h3>Analisi dei Requisiti</h3>
+  <p>
+    Costruire il simulatore di un sistema costituito da 3 lucciole. Inizialmente, le lucciole lampeggiano ciascuna con una
+    frequenza (costante) propria.
+  </p>
+  <ul>
+    <li><b>A)</b> Dopo 10 secondi le lucciole devono lampeggiare in modo sincronizzato.</li>
+    <li><b>B)</b> Il sistema è dotato anche di un sonar. Quando il sonar rileva un ostacolo a una distanza minore di una distanza
+    prefissata DMIN, le lucciole devono lampeggiare in modo sincronizzato. Quando la distanza dell'ostacolo
+    (ri)supera DMIN, le lucciole tornano a lampeggiare in modo random.</li>
+  </ul>
+  </div>
+ 
+
+<h2>Requirements analysis</h2>
+
+<div class="remark">
 <p>Elenco dei requisiti:</p>
 <ul>
   <li><b>R1</b> Il sistema deve prevedere 3 entità Lucciola. Il loro lampeggio comporta un'alternanza di stato interno</li>

@@ -207,24 +207,27 @@ div.imagedesc{
 <div class="body"> 
 <h2>Introduction</h2>
 
-<h3>Consegna</h3>
-<p>
-    Costruire un sistema software che comanda un Differential Drive Robot (DDR) in modo che, partendo dalla posizione iniziale HOME, il robot si sposti lungo il perimetro di una stanza rettangolare vuota. Il DDR si deve fermare quando tornato in HOME.
-</p>
-<p>
-    Il DDR è anche sensibile ai dati rilevati da un Radar. Quando il Radar rileva un 'intruso' a una distanza minore di una distanza prefissata <code>DMIN</code>:
-</p>
-<ul>
-    <li>se il DDR si sta muovendo , il DDR si ferma fino a che il Radar non rileva più un 'intruso' così vicino</li>
-    <li>se il DDR è fermo in HOME, il DDR ruota su sè stesso fino a che un 'intruso' così vicino scompare</li>
-</ul>
-
-<h3>Abstract</h3>
 <p>
     Il progetto consiste nello sviluppo di un sistema software per il controllo di un Differential Drive Robot (DDR) incaricato di girare per il perimetro di una stanza, partendo e terminando il proprio percorso in una posizione prestabilita (HOME). Il sistema integra inoltre un sensore Radar per il rilevamento di intrusi. In base alla distanza rilevata rispetto a una distanza minima (DMIN) il robot adotta comportamenti diversi.
 </p>
 
+
 <h2>Requirements</h2>
+
+<div class="remark">
+    <p>
+        Costruire un sistema software che comanda un Differential Drive Robot (DDR) in modo che, partendo dalla posizione iniziale HOME, il robot si sposti lungo il perimetro di una stanza rettangolare vuota. Il DDR si deve fermare quando tornato in HOME.
+    </p>
+    <p>
+        Il DDR è anche sensibile ai dati rilevati da un Radar. Quando il Radar rileva un 'intruso' a una distanza minore di una distanza prefissata <code>DMIN</code>:
+    </p>
+    <ul>
+        <li>se il DDR si sta muovendo , il DDR si ferma fino a che il Radar non rileva più un 'intruso' così vicino</li>
+        <li>se il DDR è fermo in HOME, il DDR ruota su sè stesso fino a che un 'intruso' così vicino scompare</li>
+    </ul>
+</div>
+
+<h2>Requirements analysis</h2>
 <p>Elenco dei requisiti:</p>
 <ul>
     <li><b>R1:</b> Il sistema deve rendere il DDR capace di visualizzare il percorso da compiere in modo tale da riconoscere quando è tornato a HOME. Tenere conto che è specificato che la stanza è rettangolare.</li>
