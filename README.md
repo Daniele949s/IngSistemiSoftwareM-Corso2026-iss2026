@@ -6,6 +6,5 @@
  <!-- comment: [ancora personalizzata] -->
 
  ## Pages
- * [Analisi firefly]([https://example.com](https://daniele949s.github.io/IngSistemiSoftwareM-Corso2026-iss2026/Daniele_Maccagnan_Firefly-project.html)
- * [Analisi dei requisiti DDR]([https://example.com](https://daniele949s.github.io/IngSistemiSoftwareM-Corso2026-iss2026/Daniele_Maccagnan_DDR_project.html)
- 
+ * [Analisi firefly](https://daniele949s.github.io/IngSistemiSoftwareM-Corso2026-iss2026/Daniele_Maccagnan_Firefly-project.html)
+ * [Analisi dei requisiti DDR](https://daniele949s.github.io/IngSistemiSoftwareM-Corso2026-iss2026/Daniele_Maccagnan_DDR_project.html)
