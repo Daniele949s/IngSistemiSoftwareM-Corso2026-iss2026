@@ -6,6 +6,6 @@
  <!-- comment: [ancora personalizzata] -->
 
  ## Pages
- * [Esempio Link 1](https://example.com)
- * [Esempio Link 2](https://example.com)
+ * [Analisi firefly]([https://example.com](https://daniele949s.github.io/IngSistemiSoftwareM-Corso2026-iss2026/Daniele_Maccagnan_Firefly-project.html))
+ * [Analisi dei requisiti DDR]([https://example.com](https://daniele949s.github.io/IngSistemiSoftwareM-Corso2026-iss2026/Daniele_Maccagnan_DDR_project.html))
  
