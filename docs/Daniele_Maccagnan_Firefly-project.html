@@ -75,10 +75,10 @@ div.imagedesc { width: 85%; margin: auto; }
 <div class="remark">
 <p>Elenco dei requisiti:</p>
 <ul>
-  <li><b>R1</b> Il sistema deve prevedere 3 entità Lucciola. Il loro lampeggio comporta un'alternanza di stato interno</li>
-  <li><b>R2</b> Nei primi 10 secondi di esecuzione ogni lucciola deve gestire autonomamente un proprio timer per lampeggiare con una frequenza costante</li>
+  <li><b>R1</b> Il sistema deve prevedere 3 entità Lucciola. Le lucciole sono modellate come QAK Actors</li>
+  <li><b>R2</b> Inizialmente, ogni Lucciola gestisce un timer interno indipendente. Il sistema deve poter passare a una modalità in cui il lampeggio non è più indipendente per ogni lucciola ma sincrono</li>
   <li><b>R3</b> Dopo 10 secondi il sistema deve far si che le lucciole lampeggino in maniera sincrona</li>
-  <li><b>R4</b> Il sistema deve integrare un sonar in grado di rilevare la distanza da un ostacolo qualsiasi  
+  <li><b>R4</b> Il sistema deve integrare un sonar in grado di rilevare la distanza da un ostacolo qualsiasi. Il Sonar deve essere un attore capace di inviare messaggi (Dispatch)</li>
     <ul>
       <li>Se la distanza rilevata è minore della distanza minima le lucciole passano allo stato di lampeggio sincronizzato</li>
       <li>Se la distanza rilevata è maggiore della distanza minima le lucciole tornano al lampeggio asincrono</li>
