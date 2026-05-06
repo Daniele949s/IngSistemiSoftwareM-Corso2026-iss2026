@@ -29,52 +29,43 @@ class Firefly2 ( name: String, scope: CoroutineScope, isconfined: Boolean=false,
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 		//IF actor.withobj !== null val actor.withobj.name� = actor.withobj.method�ENDIF
-		   
-			   var X     = 5
-			   var Y     = 5
-			   var Timer = 500L 
+		 var X = 5; var Y = 5; var Sync = false; var T = 1000L  
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						 Timer = java.util.Random().nextLong(1000L, 2000L)  
-						CommUtils.outmagenta("$name | X=$X Y=$Y  Timer=$Timer")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="random_flash", cond=doswitch() )
+					 transition( edgeName="goto",targetState="flash", cond=doswitch() )
 				}	 
-				state("random_flash") { //this:State
+				state("flash") { //this:State
 					action { //it:State
-						 Timer = java.util.Random().nextLong(1000L, 2000L)  
+						if( checkMsgContent( Term.createTerm("sync_on(S)"), Term.createTerm("sync_on(S)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 Sync = true  
+						}
+						if( checkMsgContent( Term.createTerm("sync_off(S)"), Term.createTerm("sync_off(S)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 Sync = false  
+						}
 						forward("cellstate", "cellstate($X,$Y,1)" ,"griddisplay" ) 
 						delay(500) 
 						forward("cellstate", "cellstate($X,$Y,0)" ,"griddisplay" ) 
+						 
+						 		   if(Sync) { T = 500L } 
+						 		   else { T = java.util.Random().nextLong(1000L, 2000L) } 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
-				 	 		stateTimer = TimerActor("timer_random_flash", 
-				 	 					  scope, context!!, "local_tout_"+name+"_random_flash", Timer )  //OCT2023
+				 	 		stateTimer = TimerActor("timer_flash", 
+				 	 					  scope, context!!, "local_tout_"+name+"_flash", T )  //OCT2023
 					}	 	 
-					 transition(edgeName="t07",targetState="random_flash",cond=whenTimeout("local_tout_"+name+"_random_flash"))   
-					transition(edgeName="t08",targetState="sync_flash",cond=whenDispatch("sync_on"))
-				}	 
-				state("sync_flash") { //this:State
-					action { //it:State
-						forward("cellstate", "cellstate($X,$Y,1)" ,"griddisplay" ) 
-						delay(500) 
-						forward("cellstate", "cellstate($X,$Y,0)" ,"griddisplay" ) 
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-				 	 		stateTimer = TimerActor("timer_sync_flash", 
-				 	 					  scope, context!!, "local_tout_"+name+"_sync_flash", 500.toLong() )  //OCT2023
-					}	 	 
-					 transition(edgeName="t19",targetState="sync_flash",cond=whenTimeout("local_tout_"+name+"_sync_flash"))   
-					transition(edgeName="t110",targetState="s0",cond=whenDispatch("sync_off"))
+					 transition(edgeName="t04",targetState="flash",cond=whenTimeout("local_tout_"+name+"_flash"))   
+					transition(edgeName="t05",targetState="flash",cond=whenDispatch("sync_on"))
+					transition(edgeName="t06",targetState="flash",cond=whenDispatch("sync_off"))
 				}	 
 			}
 		}

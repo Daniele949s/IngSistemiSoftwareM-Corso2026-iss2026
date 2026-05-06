@@ -1,10 +1,9 @@
-System /* -trace */ firefly
+System firefly
 
-Dispatch cellstate : cellstate(X,Y,COLOR)     "commute cell state"
+Dispatch cellstate : cellstate(X,Y,COLOR)
 Dispatch sync_on   : sync_on(S)
 Dispatch sync_off  : sync_off(S)
-//Event sync : sync(S) //Evento per sincronizzare
-Event    data : distance(D)
+Event    data      : distance(D)
 
 Context ctxfirefly ip [ host="localhost"      port=8040 ] 
 Context ctxgrid    ip [ host="127.0.0.1"      port=8050 ]
@@ -13,15 +12,11 @@ ExternalQActor griddisplay context ctxgrid
 
 QActor sonar context ctxfirefly {
 	[# var Distance = 1 #] 
-	
-	State s0 initial {
-		println("$name | starts") color cyan
-	}
+	State s0 initial { }
 	Goto sonar_on
 	
 	State sonar_on {
 		[# Distance = java.util.Random().nextInt(1, 30) #]
-		println("$name | Rilevata distanza: $Distance") color cyan
 		emit data : distance($Distance)
 		delay 2000 
 	}
@@ -29,145 +24,204 @@ QActor sonar context ctxfirefly {
 }
 
 QActor sync_actor context ctxfirefly {
-	[#
-	   var Timer_sync  = 10000L   
-	   var DMIN = 10
-	#]
-	
-	State s0 initial {
-		println("$name | Sincronizzazione avviata") color red	
-	}
-	Transition t0 
-		whenTimeVar Timer_sync -> sync_sec
-		whenEvent data -> handle_sonar
-		
-	State sync_sec {
-		println("$name | Sincronizzazione (10s)") color red
-		forward firefly1 -m sync_on : sync_on(S)
-		forward firefly2 -m sync_on : sync_on(S)
-		forward firefly3 -m sync_on : sync_on(S)	
-	}
+	[# var DMIN = 10 #]
+	State s0 initial { }
 	Goto wait_events
 	
 	State wait_events {
-	}
-	Transition t1
-		whenEvent data -> handle_sonar
-		
-	State handle_sonar {
 		onMsg(data : distance(D)) {
-			[# var Dist = payloadArg(0).toInt() #]
+			[# 
+			   var Dist = payloadArg(0).toInt() 
+			   var Obstacle = (Dist < DMIN)
+			#]
 			
-			if [# Dist < DMIN #] {
-				println("$name | Ostacolo rilevato") color red
+			if [# Obstacle #] {
 				forward firefly1 -m sync_on : sync_on(S)
 				forward firefly2 -m sync_on : sync_on(S)
 				forward firefly3 -m sync_on : sync_on(S)
+				forward firefly4 -m sync_on : sync_on(S)
+				forward firefly5 -m sync_on : sync_on(S)
+				forward firefly6 -m sync_on : sync_on(S)
+				
 			}
-			
-			if [# Dist >= DMIN #] {
-				println("$name | Ostacolo non rilevato") color red
+			if [# !Obstacle #] {
 				forward firefly1 -m sync_off : sync_off(S)
 				forward firefly2 -m sync_off : sync_off(S)
 				forward firefly3 -m sync_off : sync_off(S)
+				forward firefly4 -m sync_off : sync_off(S)
+				forward firefly5 -m sync_off : sync_off(S)
+				forward firefly6 -m sync_off : sync_off(S)
 			}
 		}
 	}
-	Goto wait_events
+	Transition t1
+		whenEvent data -> wait_events
 }
 
-QActor firefly1 context ctxfirefly  {     
-	[#   
-	   var X     = 10
-	   var Y     = 10
-	   var Timer = 500L 
- 	#] 
-	State s0 initial {
-        [# Timer = java.util.Random().nextLong(1000L, 2000L) #]
-		println("$name | X=$X Y=$Y  Timer=$Timer") color magenta	
-	}
-	Goto random_flash
+QActor firefly1 context ctxfirefly {     
+	[# var X = 10; var Y = 10; var Sync = false; var T = 1000L #] 
+	State s0 initial { }
+	Goto flash
 	
-	State random_flash {
-		[# Timer = java.util.Random().nextLong(1000L, 2000L) #] 
- 		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
+	State flash {
+	    onMsg( sync_on : sync_on(S) ) {
+	        [# Sync = true #]
+	    }
+	    onMsg( sync_off : sync_off(S) ) {
+	        [# Sync = false #]
+	    }
+	
+		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
  		delay 500	
- 		forward griddisplay -m cellstate : cellstate($X,$Y,0) 				
+ 		forward griddisplay -m cellstate : cellstate($X,$Y,0)
+ 		
+ 		[# 
+ 		   if(Sync) { T = 500L } 
+ 		   else { T = java.util.Random().nextLong(1000L, 2000L) } 
+ 		#]
 	}
 	Transition t0 
-		whenTimeVar Timer  -> random_flash
-		whenMsg   sync_on  -> sync_flash         
-		
-	State sync_flash {
- 		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
- 		delay 500	
- 		forward griddisplay -m cellstate : cellstate($X,$Y,0) 	
-	}
-	Transition t1
-		whenTime 500 -> sync_flash
-		whenMsg  sync_off -> s0
+	    whenTimeVar T -> flash
+	    whenMsg sync_on -> flash
+	    whenMsg sync_off -> flash
 }
 
-QActor firefly2 context ctxfirefly  {     
-	[#   
-	   var X     = 5
-	   var Y     = 5
-	   var Timer = 500L 
- 	#] 
-	State s0 initial {
-        [# Timer = java.util.Random().nextLong(1000L, 2000L) #]
-		println("$name | X=$X Y=$Y  Timer=$Timer") color magenta	
-	}
-	Goto random_flash
+QActor firefly2 context ctxfirefly {     
+	[# var X = 5; var Y = 5; var Sync = false; var T = 1000L #] 
+	State s0 initial { }
+	Goto flash
 	
-	State random_flash {
-		[# Timer = java.util.Random().nextLong(1000L, 2000L) #] 
- 		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
+	State flash {
+	    onMsg( sync_on : sync_on(S) ) {
+	        [# Sync = true #]
+	    }
+	    onMsg( sync_off : sync_off(S) ) {
+	        [# Sync = false #]
+	    }
+	
+		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
  		delay 500	
- 		forward griddisplay -m cellstate : cellstate($X,$Y,0) 				
+ 		forward griddisplay -m cellstate : cellstate($X,$Y,0)
+ 		
+ 		[# 
+ 		   if(Sync) { T = 500L } 
+ 		   else { T = java.util.Random().nextLong(1000L, 2000L) } 
+ 		#]
 	}
 	Transition t0 
-		whenTimeVar Timer  -> random_flash
-		whenMsg   sync_on  -> sync_flash         
-		
-	State sync_flash {
- 		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
- 		delay 500	
- 		forward griddisplay -m cellstate : cellstate($X,$Y,0) 	
-	}
-	Transition t1
-		whenTime 500 -> sync_flash
-		whenMsg  sync_off -> s0
+	    whenTimeVar T -> flash
+	    whenMsg sync_on -> flash
+	    whenMsg sync_off -> flash
 }
 
-QActor firefly3 context ctxfirefly  {     
-	[#   
-	   var X     = 2
-	   var Y     = 2
-	   var Timer = 500L 
- 	#] 
-	State s0 initial {
-        [# Timer = java.util.Random().nextLong(1000L, 2000L) #]
-		println("$name | X=$X Y=$Y  Timer=$Timer") color magenta	
-	}
-	Goto random_flash
+QActor firefly3 context ctxfirefly {     
+	[# var X = 1; var Y = 1; var Sync = false; var T = 1000L #] 
+	State s0 initial { }
+	Goto flash
 	
-	State random_flash {
-		[# Timer = java.util.Random().nextLong(1000L, 2000L) #] 
- 		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
+	State flash {
+	    onMsg( sync_on : sync_on(S) ) {
+	        [# Sync = true #]
+	    }
+	    onMsg( sync_off : sync_off(S) ) {
+	        [# Sync = false #]
+	    }
+	
+		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
  		delay 500	
- 		forward griddisplay -m cellstate : cellstate($X,$Y,0) 				
+ 		forward griddisplay -m cellstate : cellstate($X,$Y,0)
+ 		
+ 		[# 
+ 		   if(Sync) { T = 500L } 
+ 		   else { T = java.util.Random().nextLong(1000L, 2000L) } 
+ 		#]
 	}
 	Transition t0 
-		whenTimeVar Timer  -> random_flash
-		whenMsg   sync_on  -> sync_flash         
-		
-	State sync_flash {
- 		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
+	    whenTimeVar T -> flash
+	    whenMsg sync_on -> flash
+	    whenMsg sync_off -> flash
+}
+
+QActor firefly4 context ctxfirefly {     
+	[# var X = 8; var Y = 8; var Sync = false; var T = 1000L #] 
+	State s0 initial { }
+	Goto flash
+	
+	State flash {
+	    onMsg( sync_on : sync_on(S) ) {
+	        [# Sync = true #]
+	    }
+	    onMsg( sync_off : sync_off(S) ) {
+	        [# Sync = false #]
+	    }
+	
+		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
  		delay 500	
- 		forward griddisplay -m cellstate : cellstate($X,$Y,0) 	
+ 		forward griddisplay -m cellstate : cellstate($X,$Y,0)
+ 		
+ 		[# 
+ 		   if(Sync) { T = 500L } 
+ 		   else { T = java.util.Random().nextLong(1000L, 2000L) } 
+ 		#]
 	}
-	Transition t1
-		whenTime 500 -> sync_flash
-		whenMsg  sync_off -> s0
+	Transition t0 
+	    whenTimeVar T -> flash
+	    whenMsg sync_on -> flash
+	    whenMsg sync_off -> flash
+}
+
+QActor firefly5 context ctxfirefly {     
+	[# var X = 9; var Y = 9; var Sync = false; var T = 1000L #] 
+	State s0 initial { }
+	Goto flash
+	
+	State flash {
+	    onMsg( sync_on : sync_on(S) ) {
+	        [# Sync = true #]
+	    }
+	    onMsg( sync_off : sync_off(S) ) {
+	        [# Sync = false #]
+	    }
+	
+		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
+ 		delay 500	
+ 		forward griddisplay -m cellstate : cellstate($X,$Y,0)
+ 		
+ 		[# 
+ 		   if(Sync) { T = 500L } 
+ 		   else { T = java.util.Random().nextLong(1000L, 2000L) } 
+ 		#]
+	}
+	Transition t0 
+	    whenTimeVar T -> flash
+	    whenMsg sync_on -> flash
+	    whenMsg sync_off -> flash
+}
+
+QActor firefly6 context ctxfirefly {     
+	[# var X = 11; var Y = 11; var Sync = false; var T = 1000L #] 
+	State s0 initial { }
+	Goto flash
+	
+	State flash {
+	    onMsg( sync_on : sync_on(S) ) {
+	        [# Sync = true #]
+	    }
+	    onMsg( sync_off : sync_off(S) ) {
+	        [# Sync = false #]
+	    }
+	
+		forward griddisplay -m cellstate : cellstate($X,$Y,1) 				
+ 		delay 500	
+ 		forward griddisplay -m cellstate : cellstate($X,$Y,0)
+ 		
+ 		[# 
+ 		   if(Sync) { T = 500L } 
+ 		   else { T = java.util.Random().nextLong(1000L, 2000L) } 
+ 		#]
+	}
+	Transition t0 
+	    whenTimeVar T -> flash
+	    whenMsg sync_on -> flash
+	    whenMsg sync_off -> flash
 }

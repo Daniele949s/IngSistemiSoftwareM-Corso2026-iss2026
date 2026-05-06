@@ -31,14 +31,23 @@ with Diagram('fireflyArch', show=False, outformat='png', graph_attr=graphattr) a
           firefly1=Custom('firefly1','./qakicons/symActorWithobjSmall.png')
           firefly2=Custom('firefly2','./qakicons/symActorWithobjSmall.png')
           firefly3=Custom('firefly3','./qakicons/symActorWithobjSmall.png')
+          firefly4=Custom('firefly4','./qakicons/symActorWithobjSmall.png')
+          firefly5=Custom('firefly5','./qakicons/symActorWithobjSmall.png')
+          firefly6=Custom('firefly6','./qakicons/symActorWithobjSmall.png')
      with Cluster('ctxgrid', graph_attr=nodeattr):
           griddisplay=Custom('griddisplay(ext)','./qakicons/externalQActor.png')
      sonar >> Edge( label='data', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      sys >> Edge( label='data', **evattr, decorate='true', fontcolor='darkgreen') >> sync_actor
+     sync_actor >> Edge(color='blue', style='solid',  decorate='true', label='<sync_on &nbsp; sync_off &nbsp; >',  fontcolor='blue') >> firefly6
+     sync_actor >> Edge(color='blue', style='solid',  decorate='true', label='<sync_on &nbsp; sync_off &nbsp; >',  fontcolor='blue') >> firefly5
+     firefly6 >> Edge(color='blue', style='solid',  decorate='true', label='<cellstate &nbsp; >',  fontcolor='blue') >> griddisplay
+     sync_actor >> Edge(color='blue', style='solid',  decorate='true', label='<sync_on &nbsp; sync_off &nbsp; >',  fontcolor='blue') >> firefly4
+     firefly4 >> Edge(color='blue', style='solid',  decorate='true', label='<cellstate &nbsp; >',  fontcolor='blue') >> griddisplay
+     sync_actor >> Edge(color='blue', style='solid',  decorate='true', label='<sync_on &nbsp; sync_off &nbsp; >',  fontcolor='blue') >> firefly3
+     sync_actor >> Edge(color='blue', style='solid',  decorate='true', label='<sync_on &nbsp; sync_off &nbsp; >',  fontcolor='blue') >> firefly2
      sync_actor >> Edge(color='blue', style='solid',  decorate='true', label='<sync_on &nbsp; sync_off &nbsp; >',  fontcolor='blue') >> firefly1
      firefly2 >> Edge(color='blue', style='solid',  decorate='true', label='<cellstate &nbsp; >',  fontcolor='blue') >> griddisplay
-     firefly1 >> Edge(color='blue', style='solid',  decorate='true', label='<cellstate &nbsp; >',  fontcolor='blue') >> griddisplay
-     sync_actor >> Edge(color='blue', style='solid',  decorate='true', label='<sync_on &nbsp; sync_off &nbsp; >',  fontcolor='blue') >> firefly3
+     firefly5 >> Edge(color='blue', style='solid',  decorate='true', label='<cellstate &nbsp; >',  fontcolor='blue') >> griddisplay
      firefly3 >> Edge(color='blue', style='solid',  decorate='true', label='<cellstate &nbsp; >',  fontcolor='blue') >> griddisplay
-     sync_actor >> Edge(color='blue', style='solid',  decorate='true', label='<sync_on &nbsp; sync_off &nbsp; >',  fontcolor='blue') >> firefly2
+     firefly1 >> Edge(color='blue', style='solid',  decorate='true', label='<cellstate &nbsp; >',  fontcolor='blue') >> griddisplay
 diag

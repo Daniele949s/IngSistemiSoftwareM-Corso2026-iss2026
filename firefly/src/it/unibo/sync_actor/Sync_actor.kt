@@ -29,29 +29,10 @@ class Sync_actor ( name: String, scope: CoroutineScope, isconfined: Boolean=fals
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 		//IF actor.withobj !== null val actor.withobj.name� = actor.withobj.method�ENDIF
-		
-			   var Timer_sync  = 10000L   
-			   var DMIN = 10
+		 var DMIN = 10  
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outred("$name | Sincronizzazione avviata")
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-				 	 		stateTimer = TimerActor("timer_s0", 
-				 	 					  scope, context!!, "local_tout_"+name+"_s0", Timer_sync )  //OCT2023
-					}	 	 
-					 transition(edgeName="t00",targetState="sync_sec",cond=whenTimeout("local_tout_"+name+"_s0"))   
-					transition(edgeName="t01",targetState="handle_sonar",cond=whenEvent("data"))
-				}	 
-				state("sync_sec") { //this:State
-					action { //it:State
-						CommUtils.outred("$name | Sincronizzazione (10s)")
-						forward("sync_on", "sync_on(S)" ,"firefly1" ) 
-						forward("sync_on", "sync_on(S)" ,"firefly2" ) 
-						forward("sync_on", "sync_on(S)" ,"firefly3" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -61,29 +42,26 @@ class Sync_actor ( name: String, scope: CoroutineScope, isconfined: Boolean=fals
 				}	 
 				state("wait_events") { //this:State
 					action { //it:State
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition(edgeName="t12",targetState="handle_sonar",cond=whenEvent("data"))
-				}	 
-				state("handle_sonar") { //this:State
-					action { //it:State
 						if( checkMsgContent( Term.createTerm("distance(D)"), Term.createTerm("distance(D)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								 var Dist = payloadArg(0).toInt()  
-								if(  Dist < DMIN  
-								 ){CommUtils.outred("$name | Ostacolo rilevato")
-								forward("sync_on", "sync_on(S)" ,"firefly1" ) 
+								 
+											   var Dist = payloadArg(0).toInt() 
+											   var Obstacle = (Dist < DMIN)
+								if(  Obstacle  
+								 ){forward("sync_on", "sync_on(S)" ,"firefly1" ) 
 								forward("sync_on", "sync_on(S)" ,"firefly2" ) 
 								forward("sync_on", "sync_on(S)" ,"firefly3" ) 
+								forward("sync_on", "sync_on(S)" ,"firefly4" ) 
+								forward("sync_on", "sync_on(S)" ,"firefly5" ) 
+								forward("sync_on", "sync_on(S)" ,"firefly6" ) 
 								}
-								if(  Dist >= DMIN  
-								 ){CommUtils.outred("$name | Ostacolo non rilevato")
-								forward("sync_off", "sync_off(S)" ,"firefly1" ) 
+								if(  !Obstacle  
+								 ){forward("sync_off", "sync_off(S)" ,"firefly1" ) 
 								forward("sync_off", "sync_off(S)" ,"firefly2" ) 
 								forward("sync_off", "sync_off(S)" ,"firefly3" ) 
+								forward("sync_off", "sync_off(S)" ,"firefly4" ) 
+								forward("sync_off", "sync_off(S)" ,"firefly5" ) 
+								forward("sync_off", "sync_off(S)" ,"firefly6" ) 
 								}
 						}
 						//genTimer( actor, state )
@@ -91,7 +69,7 @@ class Sync_actor ( name: String, scope: CoroutineScope, isconfined: Boolean=fals
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="wait_events", cond=doswitch() )
+					 transition(edgeName="t10",targetState="wait_events",cond=whenEvent("data"))
 				}	 
 			}
 		}

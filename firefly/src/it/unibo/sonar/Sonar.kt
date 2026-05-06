@@ -33,7 +33,6 @@ class Sonar ( name: String, scope: CoroutineScope, isconfined: Boolean=false, is
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outcyan("$name | starts")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -44,7 +43,6 @@ class Sonar ( name: String, scope: CoroutineScope, isconfined: Boolean=false, is
 				state("sonar_on") { //this:State
 					action { //it:State
 						 Distance = java.util.Random().nextInt(1, 30)  
-						CommUtils.outcyan("$name | Rilevata distanza: $Distance")
 						emit("data", "distance($Distance)" ) 
 						delay(2000) 
 						//genTimer( actor, state )
