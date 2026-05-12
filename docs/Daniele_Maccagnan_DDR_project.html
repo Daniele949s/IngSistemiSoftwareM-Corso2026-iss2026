@@ -1,11 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-    <!--
-<link rel="stylesheet" type="text/css" href="../css/issStyle1.css">
-<script type="text/javascript" src="../css/issStyle.js"></script>
--->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js" crossorigin="anonymous"></script> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="./commons/resources/styles/templateISS.css">
@@ -13,8 +9,7 @@
         <link rel="stylesheet" type="text/css" href="./commons/resources/styles/navbar.css">
         <link rel="stylesheet" type="text/css" href="./commons/resources/styles/table.css">
         <link rel="stylesheet" type="text/css" href="./commons/resources/styles/code.css">
-        <!-- <script type="text/javascript" src="./commons/resources/scripts/myScripts.js"></script> -->
-<style type="text/css">
+        <style type="text/css">
 body
 {
     margin-left:  30px;
@@ -225,17 +220,22 @@ div.imagedesc{
         <li>se il DDR si sta muovendo , il DDR si ferma fino a che il Radar non rileva più un 'intruso' così vicino</li>
         <li>se il DDR è fermo in HOME, il DDR ruota su sè stesso fino a che un 'intruso' così vicino scompare</li>
     </ul>
+    <hr>
+    <p><b>Consegna aggiuntiva:</b></p>
+    <ul>
+        <li>Realizzare il sistema proposto il 5/05 usando un sonar collegato a un Raspberry PICOW.</li>
+        <li>Realizzare un robot come servizio fruibile via rete e osservabile mediante eventi.</li>
+    </ul>
 </div>
 
 <h2>Requirements analysis</h2>
 <p>Elenco dei requisiti:</p>
 <ul>
-    <li><b>R1:</b> Il sistema deve rendere il DDR capace di visualizzare il percorso da compiere in modo tale da riconoscere quando è tornato a HOME. Tenere conto che è specificato che la stanza è rettangolare.</li>
-    <li><b>R2:</b> Il DDR deve essere dotato di un Radar (da implementare) capace di analizzare l’ambiente fisico circostante, sapendo quantificare la distanza tra se stesso e eventuali “intrusi”.</li>
-    <li><b>R3:</b> Se il DDR rileva un intruso, deve valutare se esso è a distanza maggiore o minore di una distanza prefissata DMIN.</li>
-    <li><b>R4:</b> Se il DDR è in movimento e rileva un intruso a distanza inferiore di DMIN, si ferma fino a che l’intruso non è a distanza maggiore di DMIN.</li>
-    <li><b>R5:</b> Se il DDR è fermo in HOME e rileva un intruso a distanza inferiore di DMIN, inizia a girare su se stesso fino a che l’intruso non è a distanza maggiore di DMIN.</li>
-    <li><b>R6:</b> Sono presenti perciò le entità <b>Radar</b> (attore) dedicata all’analisi dell’ambiente, <b>Movimento_Handler</b> (attore) dedicato al movimento nella stanza e <b>Intruso_Handler</b> (attore) dedicato alla gestione di rilevamento di intrusi.</li>
+    <li><b>R1:</b> Il funzionamento DDR dovrà essere rappresentato da un QAK Actor dedicato, esso dovrà essere osservabile (comunicando variazioni del proprio stato interno). Inoltre dovrà poter essere fruibile via rete, potendo quindi ricevere comandi sotto forma di messaggi (es: Dispatch cmd: cmd()) </li>
+    <li><b>R2:</b> Il Sonar viene implementato tramite un Sonar fisico gestito da un Raspberry Pi Pico W, che trasmetterà i dati sulla distanza come eventi QAK (es: Event sonar : distance(D)) </li>
+    <li><b>R4:</b> Si è concordato con il committente che sarà presente un ulteriore QAK Actor che ricoprirà il ruolo di Coordinatore. Questo sarà in grado di osservare gli Event del Sonar (valutando la distanza) e di inviare Dispatch al QAK Actor del DDR </li>
+    <li><b>R5:</b> Se il coordinatore, dopo aver ricevuto un Event dal Sonar, rileva che c'è un "intruso" a distanza inferiore di DMIN, dovrà inviare un Dispatch al QAK Actor del DDR per farlo fermare fino a quando la distanza dall'"intruso" non diventa superiore a DMIN </li>
+    <li><b>R6:</b> Se il coordinatore, dopo aver ricevuto un Event dal Sonar, rileva che c'è un "intruso" a distanza inferiore di DMIN e il DDR è fermo in HOME (posizione pre-specificata nell'ambiente dove è presente il DDR), dovrà inviare un Dispatch al QAK Actor del DDR per farlo ruotare su se stesso fino a quando la distanza dall'"intruso" non diventa superiore a DMIN </li>
 </ul>
 
 <h2>Problem analysis</h2>
