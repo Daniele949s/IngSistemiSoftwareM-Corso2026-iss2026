@@ -233,17 +233,52 @@ div.imagedesc{
 <ul>
     <li><b>R1:</b> Il funzionamento DDR dovrà essere rappresentato da un QAK Actor dedicato, esso dovrà essere osservabile (comunicando variazioni del proprio stato interno). Inoltre dovrà poter essere fruibile via rete, potendo quindi ricevere comandi sotto forma di messaggi (es: Dispatch cmd: cmd()) </li>
     <li><b>R2:</b> Il Sonar viene implementato tramite un Sonar fisico gestito da un Raspberry Pi Pico W, che trasmetterà i dati sulla distanza come eventi QAK (es: Event sonar : distance(D)) </li>
-    <li><b>R4:</b> Si è concordato con il committente che sarà presente un ulteriore QAK Actor che ricoprirà il ruolo di Coordinatore. Questo sarà in grado di osservare gli Event del Sonar (valutando la distanza) e di inviare Dispatch al QAK Actor del DDR </li>
-    <li><b>R5:</b> Se il coordinatore, dopo aver ricevuto un Event dal Sonar, rileva che c'è un "intruso" a distanza inferiore di DMIN, dovrà inviare un Dispatch al QAK Actor del DDR per farlo fermare fino a quando la distanza dall'"intruso" non diventa superiore a DMIN </li>
-    <li><b>R6:</b> Se il coordinatore, dopo aver ricevuto un Event dal Sonar, rileva che c'è un "intruso" a distanza inferiore di DMIN e il DDR è fermo in HOME (posizione pre-specificata nell'ambiente dove è presente il DDR), dovrà inviare un Dispatch al QAK Actor del DDR per farlo ruotare su se stesso fino a quando la distanza dall'"intruso" non diventa superiore a DMIN </li>
+    <li><b>R3:</b> Si è concordato con il committente che sarà presente un ulteriore QAK Actor che ricoprirà il ruolo di Coordinatore. Questo sarà in grado di osservare gli Event del Sonar (valutando la distanza) e di inviare Dispatch al QAK Actor del DDR </li>
+    <li><b>R4:</b> Se il coordinatore, dopo aver ricevuto un Event dal Sonar, rileva che c'è un "intruso" a distanza inferiore di DMIN, dovrà inviare un Dispatch al QAK Actor del DDR per farlo fermare fino a quando la distanza dall'"intruso" non diventa superiore a DMIN </li>
+    <li><b>R5:</b> Se il coordinatore, dopo aver ricevuto un Event dal Sonar, rileva che c'è un "intruso" a distanza inferiore di DMIN e il DDR è fermo in HOME (posizione pre-specificata nell'ambiente dove è presente il DDR), dovrà inviare un Dispatch al QAK Actor del DDR per farlo ruotare su se stesso fino a quando la distanza dall'"intruso" non diventa superiore a DMIN </li>
 </ul>
+
+<p>Descrizione in QAK delle entità:</p>
+<pre>
+System ddr
+
+<b>R1: Messaggi diretti al DDR</b>
+Dispatch cmd       : cmd(MOVE)     
+
+<b>R2: Evento emesso dal Sonar fisico</b>
+Event    sonarData : distance(D)   
+
+<b>R1: Attore del ddr </b>
+QActor ddr context ... {
+    State s0 initial { }
+    Goto wait_commands
+
+    State wait_commands { }
+    Transition t whenMsg cmd -> process_command
+
+    State process_command { }
+    Goto wait_commands
+}
+
+<b>R3: Attore coordinatore</b>
+QActor coordinator context ... {
+    State s0 initial { }
+    Goto wait_event
+    
+    State wait_event { }
+    Transition t whenEvent sonarData -> handle_event
+    
+    State handle_event { }
+    Goto wait_event
+}
+</pre>
 
 <h2>Problem analysis</h2>
  
 <h2>Test plans</h2> 
 
 <h2>Project</h2> 
- 
+
 <h2>Testing</h2> 
  
 <h2>Deployment</h2> 
